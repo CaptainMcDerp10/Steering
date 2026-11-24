@@ -55,7 +55,37 @@ func _draw() -> void:
 # 3. The wander function should return a unit vector (Vector2 direction) and nothing else. 
 # 4. I've marked in the code what section should be in its own wander function.
 
-
+func _process(delta: float) -> void:
+	for boid in boids:
+		
+		#Wander function starts here
+		
+		boid.random_timer -= delta
+		
+		#When random timer reaches 0, we update the direction of the wander.
+		if boid.random_timer <= 0:
+			#var random_direction = steering_random()
+			
+			#Generate a random degree between -45 and 45 (90 degrees)
+			var random_degree = randf_range(-45, 45)
+			#Rotate the desired direction with the random degree, converted from degrees to radian.
+			boid.desired_direction = boid.desired_direction.rotated(deg_to_rad(random_degree))
+			
+			#Set a random speed and timer
+			boid.speed = randf_range(40, 225)
+			boid.random_timer = randf_range (2, 5)
+			boid.lerp_t = 0.0
+		
+		#Wander function ends here
+		
+		#Example for how it could look when all steering functions are finished:
+		#var combined_vector: Vector2
+	#	combined_vector += wander(boid) * WANDER_WEIGHT
+	#	combined_vector += avoid(boid) * AVOID_WEIGHT
+	#	combined_vector += group(boid) * GROUP_WEIGHT
+		
+		#As long as the current direction is not equal to the desired direction, we lerp towards it.
+		if boid.direction != boid.desired_direction:
 			#Increase the t-value towards 1.
 			boid.lerp_t += delta * 0.1
 			#Make sure the t-value is never below 0 or above 1.
@@ -67,6 +97,13 @@ func _draw() -> void:
 		boid.direction = boid.direction.normalized()
 		
 		#Move boid forward in the current direction
+		boid.position += boid.direction * boid.speed * delta
+		
+		#Screen wrapping
+		if boid.position.y < 0:
+			boid.position.y = background.size.y
+		elif boid.position.y > background.size.y:
+			boid.position.y = 0
 		elif boid.position.x < 0:
 			boid.position.x = background.size.x
 		elif boid.position.x > background.size.x:
