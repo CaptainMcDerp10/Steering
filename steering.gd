@@ -34,6 +34,7 @@ func _ready() -> void:
 	for i in range(100):
 		var boid : Boid = Boid.new()
 		boid.direction = Vector2(randf_range(-1, 1), randf_range(-1, 1))
+		boid.desired_direction = boid.direction
 		boid.position = Vector2(background.size.x / 2, background.size.y / 2) 
 		boid.speed = randf_range(40, 225)
 		
@@ -53,15 +54,17 @@ func _process(delta: float) -> void:
 		boid.random_timer -= delta
 		
 		if boid.random_timer <= 0:
-			var random_direction = steering_random()
-			boid.desired_direction = random_direction
+			#var random_direction = steering_random()
+			
+			var random_degree = randf_range(-45, 45)
+			boid.desired_direction = boid.desired_direction.rotated(deg_to_rad(random_degree))
+			
 			boid.speed = randf_range(40, 225)
-			print("new direction")
-			boid.random_timer = randf_range (2, 8)
+			boid.random_timer = randf_range (2, 5)
 			boid.lerp_t = 0.0
 		
 		if boid.direction != boid.desired_direction:
-			boid.lerp_t += delta
+			boid.lerp_t += delta * 0.1
 			boid.lerp_t = clamp(boid.lerp_t, 0.0, 1.0)
 			boid.direction = boid.direction.lerp(boid.desired_direction, boid.lerp_t)
 		
