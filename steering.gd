@@ -30,6 +30,8 @@ var boids : Array[Boid] = []
 # position.x < 0 = it is left of the backround
 # position.x > backround.size.x = höger om skärmen
 
+#This is a banana
+
 func _ready() -> void:
 	for i in range(100):
 		var boid : Boid = Boid.new()
